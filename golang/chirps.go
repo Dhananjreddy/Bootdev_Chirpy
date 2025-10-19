@@ -8,6 +8,7 @@ import(
 	"time"
 	"errors"
 	"github.com/Dhananjreddy/Bootdev_Chirpy/golang/internal/database"
+	"database/sql"
 
 )
 
@@ -63,6 +64,7 @@ func (apiCfg *apiConfig) handlerGetAllChirps(w http.ResponseWriter, r *http.Requ
 	chirps, err := apiCfg.db.GetAllChirps(r.Context())
 	if err != nil {
 		respondWithError(w, 500, "Error fetching chirps from database", err)
+		return
 	}
 
 	var chirpsOut []newChirp
@@ -78,6 +80,37 @@ func (apiCfg *apiConfig) handlerGetAllChirps(w http.ResponseWriter, r *http.Requ
 	}
 
 	respondWithJSON(w, 200, chirpsOut)
+}
+
+func (apiCfg *apiConfig) handlerGetChirpByID(w http.ResponseWriter, r *http.Request){
+
+	chirpIDStr := r.PathValue("chirpID")
+
+	chirpID, err := uuid.Parse(chirpIDStr); if err != nil {
+		respondWithError(w, 400, "Invalid Chirp id", nil)
+		return
+	}
+
+	chirp, err := apiCfg.db.GetChirpByID(r.Context(), chirpID)
+	if err != nil {
+    if errors.Is(err, sql.ErrNoRows) {
+        respondWithError(w, 404, "Chirp not found", err)
+        return
+    }
+    respondWithError(w, 500, "Error fetching chirp from database", err)
+    return
+}
+
+	chirpOut := newChirp{
+		Id: chirp.ID,
+		CreatedAt: chirp.CreatedAt,
+		UpdatedAt: chirp.UpdatedAt,
+		Body: chirp.Body,
+		UserID: chirp.UserID,
+	}
+
+	respondWithJSON(w, 200, chirpOut)
+	return
 }
 
 func validateChirp(chirp string) (string, error){
