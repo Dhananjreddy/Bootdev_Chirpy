@@ -93,13 +93,13 @@ func (apiCfg *apiConfig) handlerGetChirpByID(w http.ResponseWriter, r *http.Requ
 
 	chirp, err := apiCfg.db.GetChirpByID(r.Context(), chirpID)
 	if err != nil {
-    if errors.Is(err, sql.ErrNoRows) {
-        respondWithError(w, 404, "Chirp not found", err)
-        return
-    }
-    respondWithError(w, 500, "Error fetching chirp from database", err)
-    return
-}
+    	if errors.Is(err, sql.ErrNoRows) {
+        	respondWithError(w, 404, "Chirp not found", err)
+        	return
+    	}
+    	respondWithError(w, 500, "Error fetching chirp from database", err)
+    	return
+	}
 
 	chirpOut := newChirp{
 		Id: chirp.ID,
