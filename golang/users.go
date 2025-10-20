@@ -7,6 +7,8 @@ import (
 	"github.com/Dhananjreddy/Bootdev_Chirpy/golang/internal/database"
 	"github.com/Dhananjreddy/Bootdev_Chirpy/golang/internal/auth"
 	"time"
+	"errors"
+	"database/sql"
 )
 
 type User struct {
@@ -14,6 +16,8 @@ type User struct {
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 	Email     string    `json:"email"`
+	Password    string    `json:"-"`
+	IsChirpyRed bool      `json:"is_chirpy_red"`
 }
 
 func (apiCfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Request){
@@ -54,6 +58,7 @@ func (apiCfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Reques
 			CreatedAt: user.CreatedAt,
 			UpdatedAt: user.UpdatedAt,
 			Email:     user.Email,
+			IsChirpyRed: user.IsChirpyRed,
 		},
 	})
 }
@@ -111,6 +116,39 @@ func (apiCfg *apiConfig) handlerUpdatePassword(w http.ResponseWriter, r *http.Re
 			CreatedAt: user.CreatedAt,
 			UpdatedAt: user.UpdatedAt,
 			Email:     user.Email,
+			IsChirpyRed: user.IsChirpyRed,
 		},
 	})
+}
+
+func (apiCfg *apiConfig) handlerRedChirpy(w http.ResponseWriter, r *http.Request){
+	type parameters struct {
+		Event string `json:"event"`
+		Data  struct {
+			UserID uuid.UUID `json:"user_id"`
+		}
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	params := parameters{}
+	err := decoder.Decode(&params)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't decode parameters", err)
+		return
+	}
+	if params.Event != "user.upgraded" {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+	_, err = apiCfg.db.MakeChirpyRed(r.Context(), params.Data.UserID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			respondWithError(w, http.StatusNotFound, "Couldn't find user", err)
+			return
+		}
+		respondWithError(w, http.StatusInternalServerError, "Couldn't update user", err)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }
