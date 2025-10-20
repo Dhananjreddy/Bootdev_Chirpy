@@ -7,7 +7,7 @@ import (
 	"os"
 	"sync/atomic"
 
-	"github.com/Dhananjreddy/Bootdev_Chirpy/golang/internal/database"
+	"github.com/Dhananjreddy/Chirpy/golang/internal/database"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )

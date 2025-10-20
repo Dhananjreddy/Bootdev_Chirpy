@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/Dhananjreddy/Bootdev_Chirpy/golang/internal/auth"
+	"github.com/Dhananjreddy/Chirpy/golang/internal/auth"
 )
 
 

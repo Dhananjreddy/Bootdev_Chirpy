@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"errors"
-	"github.com/Dhananjreddy/Bootdev_Chirpy/golang/internal/auth"
-	"github.com/Dhananjreddy/Bootdev_Chirpy/golang/internal/database"
+	"github.com/Dhananjreddy/Chirpy/golang/internal/auth"
+	"github.com/Dhananjreddy/Chirpy/golang/internal/database"
 	"database/sql"
 	"time"
 )

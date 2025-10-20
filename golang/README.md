@@ -30,6 +30,18 @@ It’s built with Go’s standard library for high performance and simplicity, e
 
 ---
 
+## Dependencies
+
+- `argon2id` – secure password hashing  
+- `jwt/v5` – JSON Web Tokens for auth  
+- `uuid` – unique identifiers  
+- `godotenv` – load environment variables  
+- `pq` – PostgreSQL driver  
+- `x/crypto` – cryptography utilities  
+- `x/sys` – system-level functions
+
+---
+
 ## 📂 Folder Structure
 
 ```

@@ -7,8 +7,8 @@ import(
 	"github.com/google/uuid"
 	"time"
 	"errors"
-	"github.com/Dhananjreddy/Bootdev_Chirpy/golang/internal/database"
-	"github.com/Dhananjreddy/Bootdev_Chirpy/golang/internal/auth"
+	"github.com/Dhananjreddy/Chirpy/golang/internal/database"
+	"github.com/Dhananjreddy/Chirpy/golang/internal/auth"
 	"database/sql"
 	"sort"
 )

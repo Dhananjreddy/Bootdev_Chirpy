@@ -1,4 +1,4 @@
-module github.com/Dhananjreddy/Bootdev_Chirpy/golang
+module github.com/Dhananjreddy/Chirpy/golang
 
 go 1.24.4
 
