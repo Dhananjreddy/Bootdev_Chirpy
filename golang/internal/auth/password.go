@@ -2,6 +2,8 @@ package auth
 
 import (
 	"github.com/alexedwards/argon2id"
+	"crypto/rand"
+	"encoding/hex"
 	"fmt"
 	"time"
 	"github.com/golang-jwt/jwt/v5"
@@ -77,4 +79,11 @@ func GetBearerToken(headers http.Header) (string, error) {
 	}
 
 	return parts[1], nil
+}
+
+
+func MakeRefreshToken() string {
+	token := make([]byte, 32)
+	rand.Read(token)
+	return hex.EncodeToString(token)
 }

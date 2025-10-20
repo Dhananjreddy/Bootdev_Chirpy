@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"errors"
 	"github.com/Dhananjreddy/Bootdev_Chirpy/golang/internal/auth"
+	"github.com/Dhananjreddy/Bootdev_Chirpy/golang/internal/database"
 	"database/sql"
 	"time"
 )
@@ -13,7 +14,6 @@ func (apiCfg *apiConfig) handlerLogin(w http.ResponseWriter, r *http.Request){
 	type loginParams struct{
 		Password 				string 					`json:"password"`
 		Email 	 				string 					`json:"email"`
-		ExpiresInSeconds 		int					`json:"expires_in_seconds"`
 	}
 	type response struct {
 		User
@@ -52,18 +52,25 @@ func (apiCfg *apiConfig) handlerLogin(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	expirationTime := time.Hour
-	if params.ExpiresInSeconds > 0 && params.ExpiresInSeconds < 3600 {
-		expirationTime = time.Duration(params.ExpiresInSeconds) * time.Second
-	}
-
 	accessToken, err := auth.MakeJWT(
 		user.ID,
 		apiCfg.secret,
-		expirationTime,
+		time.Hour,
 	)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Couldn't create access JWT", err)
+		return
+	}
+
+	refreshToken := auth.MakeRefreshToken()
+
+	_, err = apiCfg.db.CreateRefreshToken(r.Context(), database.CreateRefreshTokenParams{
+		UserID:    user.ID,
+		Token:     refreshToken,
+		ExpiresAt: time.Now().UTC().Add(time.Hour * 24 * 60),
+	})
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't save refresh token", err)
 		return
 	}
 
@@ -75,5 +82,6 @@ func (apiCfg *apiConfig) handlerLogin(w http.ResponseWriter, r *http.Request){
 			Email:     user.Email,
 		},
 		Token: accessToken,
+		RefreshToken: refreshToken,
 	})
 }
