@@ -8,6 +8,7 @@ import(
 	"time"
 	"errors"
 	"github.com/Dhananjreddy/Bootdev_Chirpy/golang/internal/database"
+	"github.com/Dhananjreddy/Bootdev_Chirpy/golang/internal/auth"
 	"database/sql"
 
 )
@@ -25,12 +26,23 @@ func (apiCfg *apiConfig) handlerCreateChirp(w http.ResponseWriter, r *http.Reque
 	
 	type chirpParams struct{
 		Body   string       `json:"body"`
-		UserID uuid.UUID	`json:"user_id"`
 	}
+
+	token, err := auth.GetBearerToken(r.Header)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, "Couldn't find JWT", err)
+		return
+	}
+	UserID, err := auth.ValidateJWT(token, apiCfg.secret)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, "Couldn't validate JWT", err)
+		return
+	}
+
 
 	decoder := json.NewDecoder(r.Body)
     params := chirpParams{}
-    err := decoder.Decode(&params)
+    err = decoder.Decode(&params)
     if err != nil {
 		respondWithError(w, 500, "Couldn't decode parameters", err)
 		return
@@ -43,7 +55,7 @@ func (apiCfg *apiConfig) handlerCreateChirp(w http.ResponseWriter, r *http.Reque
 
 	chirp, err := apiCfg.db.CreateChirp(r.Context(), database.CreateChirpParams{
 		Body: params.Body,
-		UserID: params.UserID,
+		UserID: UserID,
 	})
 	if err != nil {
 		respondWithError(w, 500, "Error Creating Chirp", err)
