@@ -61,10 +61,10 @@ golang/
 Example `.env` for development:
 
 ```
-DB_URL="postgres://postgres:postgres@localhost:5432/chirpy?sslmode=disable"
+DB_URL="<your-postgres-access-string-here>"
 PLATFORM="dev"
-SECRET="EBEQ9ZrqWiZDNLVa0ErDbuBuCmEd+mFu4s+Jf2i8s0Arx1rxBE6PyQxZd1LPMlALkwjBfy2SViA7/ODqCT113A=="
-POLKA_KEY="f271c81ff7084ee5b99a5091b42d486e"
+SECRET="<your-jwt-secret-here>"
+POLKA_KEY="<your-polka-key-here>"
 ```
 
 ---
