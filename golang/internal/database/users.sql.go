@@ -12,13 +12,14 @@ import (
 )
 
 const createUser = `-- name: CreateUser :one
-INSERT INTO users (id, hashed_password, created_at, updated_at, email)
+INSERT INTO users (id, hashed_password, created_at, updated_at, email, is_chirpy_red)
 VALUES (
     gen_random_uuid(),
     $1,
     NOW(),
     NOW(),
-    $2
+    $2,
+    false
 )
 RETURNING id, hashed_password, created_at, updated_at, email, is_chirpy_red
 `

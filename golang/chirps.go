@@ -10,7 +10,7 @@ import(
 	"github.com/Dhananjreddy/Bootdev_Chirpy/golang/internal/database"
 	"github.com/Dhananjreddy/Bootdev_Chirpy/golang/internal/auth"
 	"database/sql"
-
+	"sort"
 )
 
 
@@ -73,10 +73,82 @@ func (apiCfg *apiConfig) handlerCreateChirp(w http.ResponseWriter, r *http.Reque
 }
 
 func (apiCfg *apiConfig) handlerGetAllChirps(w http.ResponseWriter, r *http.Request){
+
+	s := r.URL.Query().Get("author_id")
+	if s != "" {
+		id, err := uuid.Parse(s)
+    	if err != nil {
+			respondWithError(w, 500, "Couldn't parse author_id", err)
+			return
+    	}
+
+		sort := r.URL.Query().Get("sort")
+		if sort == "desc"{
+			chirps, err := apiCfg.db.GetChirpsByUserIDDesc(r.Context(), id)
+			if err != nil {
+				if errors.Is(err, sql.ErrNoRows) {
+					respondWithError(w, 404, "No chirps found", err)
+					return
+				}
+				respondWithError(w, 500, "Error fetching chirps from database", err)
+				return
+			}
+			var chirpsOut []newChirp
+
+			for _, chirp := range chirps {
+				chirpsOut = append(chirpsOut, newChirp{
+				Id: chirp.ID,
+				CreatedAt: chirp.CreatedAt,
+				UpdatedAt: chirp.UpdatedAt,
+				Body: chirp.Body,
+				UserID: chirp.UserID,
+				})
+			}
+
+			respondWithJSON(w, 200, chirpsOut)
+			return
+		}
+
+		chirps, err := apiCfg.db.GetChirpsByUserIDAsc(r.Context(), id)
+		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				respondWithError(w, 404, "No chirps found", err)
+				return
+			}
+			respondWithError(w, 500, "Error fetching chirps from database", err)
+			return
+		}
+		var chirpsOut []newChirp
+
+		for _, chirp := range chirps {
+			chirpsOut = append(chirpsOut, newChirp{
+			Id: chirp.ID,
+			CreatedAt: chirp.CreatedAt,
+			UpdatedAt: chirp.UpdatedAt,
+			Body: chirp.Body,
+			UserID: chirp.UserID,
+			})
+		}
+
+		respondWithJSON(w, 200, chirpsOut)
+		return
+	}
+
 	chirps, err := apiCfg.db.GetAllChirps(r.Context())
 	if err != nil {
 		respondWithError(w, 500, "Error fetching chirps from database", err)
 		return
+	}
+
+	sortOrder := r.URL.Query().Get("sort")
+	if sortOrder == "desc"{
+		sort.Slice(chirps, func(i, j int) bool {
+			return chirps[i].CreatedAt.After(chirps[j].CreatedAt)
+		})
+	} else {
+		sort.Slice(chirps, func(i, j int) bool {
+        	return chirps[i].CreatedAt.Before(chirps[j].CreatedAt)
+    	})
 	}
 
 	var chirpsOut []newChirp

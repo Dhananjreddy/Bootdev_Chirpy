@@ -58,7 +58,7 @@ func (apiCfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Reques
 			CreatedAt: user.CreatedAt,
 			UpdatedAt: user.UpdatedAt,
 			Email:     user.Email,
-			IsChirpyRed: user.IsChirpyRed,
+			IsChirpyRed: user.IsChirpyRed.Bool,
 		},
 	})
 }
@@ -116,7 +116,7 @@ func (apiCfg *apiConfig) handlerUpdatePassword(w http.ResponseWriter, r *http.Re
 			CreatedAt: user.CreatedAt,
 			UpdatedAt: user.UpdatedAt,
 			Email:     user.Email,
-			IsChirpyRed: user.IsChirpyRed,
+			IsChirpyRed: user.IsChirpyRed.Bool,
 		},
 	})
 }

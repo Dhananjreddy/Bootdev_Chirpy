@@ -5,7 +5,7 @@ CREATE TABLE users (
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL,
     email TEXT NOT NULL UNIQUE,
-    is_chirpy_red BOOLEAN DEFAULT FALSE
+    is_chirpy_red BOOLEAN
 );
 
 -- +goose Down
