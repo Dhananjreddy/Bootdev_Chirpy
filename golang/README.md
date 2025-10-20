@@ -118,3 +118,77 @@ go test ./...
 ```
 
 ---
+
+## Why Chirpy?
+Chirpy is a learning-focused backend that demonstrates practical patterns in Go:
+
+- Authentication with short-lived access tokens and rotating refresh tokens
+- Clean handlers with standard library `net/http`
+- Type-safe database access using `sqlc`
+- Production-friendly readiness checks and environment-driven config
+
+### Who is it for?
+- Learners building their first real Go web service  
+- Engineers exploring JWT auth, SQLC, and clean project structure
+
+---
+
+## Token Model
+- **Access Token**: JWT, short-lived (≈15m), sent in `Authorization: Bearer <token>`  
+- **Refresh Token**: Long-lived (≈7–30d), rotated on use, stored server-side, invalidated on logout/reset
+
+### Lifecycle
+- On login: client receives both tokens  
+- On refresh: client exchanges refresh token for a new access token
+
+---
+
+## Database and Migrations
+1. Apply schema from `sql/schema/` before running.
+2. Generate queries with:
+   ```bash
+   sqlc generate
+   ```
+   
+## API Examples
+
+### Register
+```bash
+curl -X POST http://localhost:8080/api/users   -H "Content-Type: application/json"   -d '{"email": "alice@example.com", "password": "supersecret"}'
+```
+
+### Login (returns access and refresh tokens)
+```bash
+curl -X POST http://localhost:8080/api/login   -H "Content-Type: application/json"   -d '{"email": "alice@example.com", "password": "supersecret"}'
+```
+
+### Refresh Access Token
+```bash
+curl -X POST http://localhost:8080/api/refresh   -H "Content-Type: application/json"   -d '{"refresh_token": "<your-refresh-token>"}'
+```
+
+### Create Chirp (requires access token)
+```bash
+curl -X POST http://localhost:8080/api/chirps   -H "Authorization: Bearer <your-access-token>"   -H "Content-Type: application/json"   -d '{"body": "hello, chirpy!"}'
+```
+
+### Delete Chirp (owner only)
+```bash
+curl -X DELETE http://localhost:8080/api/chirps/123   -H "Authorization: Bearer <your-access-token>"
+```
+
+---
+
+## Environment Setup Tips
+1. Copy `.env.example` to `.env` and fill in `DB_URL`, `SECRET`, `POLKA_KEY`.
+2. Common errors:
+   - **401 Unauthorized**: Ensure `Authorization` header is set and token is valid.
+   - **500 on startup**: Check database connectivity and applied schema.
+
+---
+
+## Readiness and Health
+- `GET /api/readiness` → returns 200 when DB and app are healthy.
+
+---
+
