@@ -1,16 +1,11 @@
 # Chirpy
 
-Chirpy is a lightweight Go-based backend that powers a simple microblogging platform where users can register, log in, and post short “chirps.”
-Built as a learning project, it demonstrates production-ready backend design with:
+Chirpy is a full-featured microblogging API inspired by Twitter, implemented in both **Golang** and **TypeScript**. It supports user registration, authentication, and CRUD operations for short posts (“chirps”), with secure session management and scalable architecture.  
 
-Clean, modular Go architecture using the standard net/http library
+The **Golang backend** uses Go’s standard `net/http` library, modular internal packages, and **PostgreSQL** integration via **SQLC** for type-safe database queries. Authentication is implemented with **JWT** and rotating refresh tokens, combined with **Argon2id** password hashing for enhanced security.  
 
-Secure password hashing via Argon2id
+The **TypeScript backend** is built with **Express** and **Drizzle ORM**, leveraging strong typing, modular routing, and seamless database migrations. Both backends provide readiness probes, health checks, and structured error handling to support production-ready deployment.  
 
-JWT authentication with rotating refresh tokens
+Chirpy emphasizes **clean architecture, maintainability, and cross-stack consistency**, with environment-based configuration, testing pipelines, and easy setup for local development. It serves as a learning-focused platform for developers exploring secure backend design, RESTful API development, and type-safe database access in Go and TypeScript.  
 
-Type-safe PostgreSQL queries generated using sqlc
-
-Environment-driven configuration and readiness checks for deploys
-
-Chirpy is ideal for learners and developers who want to understand real-world Go web development, authentication flows, and database integration in a concise, extensible project.
+Quickly start Chirpy by cloning the repo, installing dependencies, running migrations, and starting the server.
